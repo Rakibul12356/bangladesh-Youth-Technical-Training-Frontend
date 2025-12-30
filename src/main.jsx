@@ -1,19 +1,6 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import { createBrowserRouter } from "react-router";
-import { RouterProvider } from "react-router/dom";
+import React from 'react'
+import { createRoot } from 'react-dom/client'
+import AppRoutes from './router/routes'
 import './index.css'
-import HomePage from "./pages/home/HomePage";
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <HomePage />,
-  },
-]);
-
-const root = document.getElementById("root");
-
-ReactDOM.createRoot(root).render(
-  <RouterProvider router={router} />,
-);
+createRoot(document.getElementById('root')).render(<AppRoutes />)

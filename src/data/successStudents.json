@@ -1,0 +1,66 @@
+[
+  {
+    "id": 1,
+    "name": "Ayesha Rahman",
+    "course": "Diploma in Engineering",
+    "year": 2022,
+    "story": "After completing the diploma program, Ayesha secured a position at a leading local firm where she works on practical engineering projects. She credits the hands-on workshops and placement support for her success.",
+    "image": "https://randomuser.me/api/portraits/women/12.jpg"
+  },
+  {
+    "id": 2,
+    "name": "Rafi Ahmed",
+    "course": "Computer Science (HSC)",
+    "year": 2021,
+    "story": "Rafi used the IT training to build web applications and now freelances for international clients. He recommends the career guidance and practical labs to all new students.",
+    "image": "https://randomuser.me/api/portraits/men/45.jpg"
+  },
+  {
+    "id": 3,
+    "name": "Mina Khan",
+    "course": "Maritime Studies",
+    "year": 2020,
+    "story": "Mina completed maritime certification and now works on coastal projects. Her story highlights how short vocational courses can open global opportunities.",
+    "image": "https://randomuser.me/api/portraits/women/25.jpg"
+  },
+  {
+    "id": 4,
+    "name": "Sabbir Hossain",
+    "course": "Automotive Technology",
+    "year": 2019,
+    "story": "Sabbir started a small repair shop after graduation and now employs three trainees from the program. Hands-on training and industry linkups helped him launch his business.",
+    "image": "https://randomuser.me/api/portraits/men/33.jpg"
+  },
+  {
+    "id": 5,
+    "name": "Farhana Sultana",
+    "course": "Textile Technology",
+    "year": 2023,
+    "story": "Farhana joined a garment factory as a quality control assistant and quickly moved into a supervisory role thanks to practical experience and internships.",
+    "image": "https://randomuser.me/api/portraits/women/18.jpg"
+  },
+  {
+    "id": 6,
+    "name": "Jamal Uddin",
+    "course": "Construction Management",
+    "year": 2021,
+    "story": "Jamal contributed to local infrastructure projects and gained leadership experience through project-based learning during his studies.",
+    "image": "https://randomuser.me/api/portraits/men/22.jpg"
+  },
+  {
+    "id": 7,
+    "name": "Nusrat Jahan",
+    "course": "Graphic Design",
+    "year": 2020,
+    "story": "Nusrat's portfolio created during an advanced workshop helped her land a role at a design studio. Her case shows creative career paths from vocational programs.",
+    "image": "https://randomuser.me/api/portraits/women/14.jpg"
+  },
+  {
+    "id": 8,
+    "name": "Tanvir Islam",
+    "course": "Welding Technology",
+    "year": 2018,
+    "story": "Tanvir became a certified welder and now trains apprentices. He emphasizes the importance of safety training and certified instructors.",
+    "image": "https://randomuser.me/api/portraits/men/77.jpg"
+  }
+]

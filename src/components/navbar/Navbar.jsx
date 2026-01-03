@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { Menu, X } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
+import { AuthContext } from '../../context/AuthContext'
 
 const MENU_ITEMS = [
     'Home',
@@ -18,8 +19,10 @@ const Navbar = () => {
     const [open, setOpen] = useState(false)
     const location = useLocation()
 
+    const { isAuthenticated, logout } = useContext(AuthContext)
+
     return (
-        <nav className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+        <nav className="bg-white border-b border-gray-200 fixed md:sticky top-0 left-0 right-0 z-50 w-full shadow-sm">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16">
                     <Link
@@ -47,6 +50,13 @@ const Navbar = () => {
                                 </Link>
                             )
                         })}
+                        {isAuthenticated ? (
+                            <button onClick={() => { logout(); }} className="ml-4 px-4 py-2 bg-red-600 text-white rounded-md text-sm font-medium hover:bg-red-700">Logout</button>
+                        ) : (
+                            <Link to="/auth/login" className="ml-4 px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700">
+                                Login
+                            </Link>
+                        )}
                     </div>
 
                     {/* Mobile toggle */}
@@ -67,7 +77,7 @@ const Navbar = () => {
 
             {/* Mobile menu, show/hide based on menu state */}
             {open && (
-                <div className="md:hidden px-2 pt-2 pb-3 space-y-1" id="mobile-menu">
+                <div className="md:hidden px-2  pt-2 pb-3 space-y-1 w-full bg-white" id="mobile-menu">
                     {MENU_ITEMS.map((label) => {
                         const slug = label === 'Home' ? '/' : `/${label.replace(/\s+/g, '-').toLowerCase()}`
                         const isActive = location.pathname === slug
@@ -85,6 +95,20 @@ const Navbar = () => {
                             </Link>
                         )
                     })}
+                    { /* login link for mobile */}
+                    <div className="md:hidden px-2 pb-4">
+                        {isAuthenticated ? (
+                            <button onClick={() => { logout(); setOpen(false) }} className="block w-full text-center px-3 py-2 rounded-md bg-red-600 text-white font-medium">Logout</button>
+                        ) : (
+                            <Link
+                                to="/auth/login"
+                                onClick={() => setOpen(false)}
+                                className="block w-full text-center px-3 py-2 rounded-md bg-blue-600 text-white font-medium"
+                            >
+                                Login
+                            </Link>
+                        )}
+                    </div>
                 </div>
             )}
         </nav>

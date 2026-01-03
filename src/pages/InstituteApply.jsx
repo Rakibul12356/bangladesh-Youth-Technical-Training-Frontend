@@ -56,7 +56,7 @@ const InstituteApply = () => {
                     {/* Institute Information */}
                     <div>
                         <h3 className="text-xl font-semibold text-slate-900 mb-4 flex items-center gap-2">
-                            <Building className="w-5 h-5 text-purple-600" />
+                            <Building className="w-5 h-5 text-blue-500" />
                             Institute Information
                         </h3>
                         <div className="grid md:grid-cols-2 gap-6">
@@ -70,7 +70,7 @@ const InstituteApply = () => {
                                     value={formData.instituteName}
                                     onChange={handleChange}
                                     required
-                                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     placeholder="Enter institute name"
                                 />
                             </div>
@@ -83,7 +83,7 @@ const InstituteApply = () => {
                                     value={formData.instituteType}
                                     onChange={handleChange}
                                     required
-                                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 >
                                     <option value="">Select type</option>
                                     <option value="technical">Technical Institute</option>
@@ -98,7 +98,7 @@ const InstituteApply = () => {
                     {/* Principal Information */}
                     <div>
                         <h3 className="text-xl font-semibold text-slate-900 mb-4 flex items-center gap-2">
-                            <User className="w-5 h-5 text-purple-600" />
+                            <User className="w-5 h-5 text-blue-500" />
                             Principal/Contact Person
                         </h3>
                         <div className="grid md:grid-cols-2 gap-6">
@@ -112,7 +112,7 @@ const InstituteApply = () => {
                                     value={formData.principalName}
                                     onChange={handleChange}
                                     required
-                                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     placeholder="Enter full name"
                                 />
                             </div>
@@ -127,7 +127,7 @@ const InstituteApply = () => {
                                     value={formData.phone}
                                     onChange={handleChange}
                                     required
-                                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     placeholder="01XXXXXXXXX"
                                 />
                             </div>
@@ -142,7 +142,7 @@ const InstituteApply = () => {
                                     value={formData.email}
                                     onChange={handleChange}
                                     required
-                                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     placeholder="example@email.com"
                                 />
                             </div>
@@ -152,7 +152,7 @@ const InstituteApply = () => {
                     {/* Address Information */}
                     <div>
                         <h3 className="text-xl font-semibold text-slate-900 mb-4 flex items-center gap-2">
-                            <MapPin className="w-5 h-5 text-purple-600" />
+                            <MapPin className="w-5 h-5 text-blue-500" />
                             Address Information
                         </h3>
                         <div className="space-y-4">
@@ -166,7 +166,7 @@ const InstituteApply = () => {
                                     value={formData.address}
                                     onChange={handleChange}
                                     required
-                                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     placeholder="House/Road/Area"
                                 />
                             </div>
@@ -181,7 +181,7 @@ const InstituteApply = () => {
                                         value={formData.city}
                                         onChange={handleChange}
                                         required
-                                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         placeholder="Enter city"
                                     />
                                 </div>
@@ -195,7 +195,7 @@ const InstituteApply = () => {
                                         value={formData.district}
                                         onChange={handleChange}
                                         required
-                                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         placeholder="Enter district"
                                     />
                                 </div>
@@ -206,7 +206,7 @@ const InstituteApply = () => {
                     {/* Additional Message */}
                     <div>
                         <h3 className="text-xl font-semibold text-slate-900 mb-4 flex items-center gap-2">
-                            <FileText className="w-5 h-5 text-purple-600" />
+                            <FileText className="w-5 h-5 text-blue-500" />
                             Additional Information
                         </h3>
                         <div>
@@ -218,7 +218,7 @@ const InstituteApply = () => {
                                 value={formData.message}
                                 onChange={handleChange}
                                 rows="4"
-                                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
+                                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                                 placeholder="Tell us more about your institute..."
                             ></textarea>
                         </div>
@@ -235,7 +235,7 @@ const InstituteApply = () => {
                         </button>
                         <button
                             type="submit"
-                            className="flex-1 px-6 py-3 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition-colors shadow-md"
+                            className="flex-1 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors shadow-md"
                         >
                             Submit Application
                         </button>

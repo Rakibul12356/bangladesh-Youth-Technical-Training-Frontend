@@ -1,1 +1,14 @@
 @import "tailwindcss";
+
+/* Hide native password reveal/clear buttons in some browsers so our custom icon is the only visible control */
+input::-ms-reveal,
+input::-ms-clear {
+  display: none;
+}
+
+/* Attempt to hide WebKit native password reveal (may vary by browser) */
+input::-webkit-credentials-auto-fill-button,
+input::-webkit-textfield-decoration-container,
+input::-webkit-textfield-decoration {
+  display: none !important;
+}

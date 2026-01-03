@@ -1,9 +1,23 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import coursesData from '../data/coursesData.json'
 import { Clock, BarChart, Users } from 'lucide-react'
 
+const ITEMS_PER_PAGE = 15
+
 const Courses = () => {
+    const [currentPage, setCurrentPage] = useState(1)
+
+    const totalPages = Math.max(1, Math.ceil(coursesData.length / ITEMS_PER_PAGE))
+
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        if (currentPage > totalPages) setCurrentPage(totalPages)
+    }, [currentPage, totalPages])
+
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
+    const visibleCourses = coursesData.slice(startIndex, startIndex + ITEMS_PER_PAGE)
+
     return (
         <div className="bg-slate-50 min-h-screen py-12">
             <div className="max-w-7xl mx-auto px-6">
@@ -25,12 +39,12 @@ const Courses = () => {
                 </div>
 
                 {/* Courses Grid */}
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {coursesData.map((course) => (
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr">
+                    {visibleCourses.map((course) => (
                         <Link
                             key={course.id}
                             to={`/courses/${course.id}`}
-                            className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all border border-slate-200 group hover:border-blue-300"
+                            className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all border border-slate-200 group hover:border-blue-300 flex flex-col h-full"
                         >
                             {/* Course Image */}
                             <div className="relative h-48 overflow-hidden bg-slate-200">
@@ -45,8 +59,8 @@ const Courses = () => {
                             </div>
 
                             {/* Course Content */}
-                            <div className="p-6">
-                                <h3 className="text-xl font-bold text-slate-900 mb-2 group-hover:text-blue-600 transition-colors">
+                            <div className="p-6 flex-1 flex flex-col justify-between">
+                                <h3 className="text-xl font-bold text-slate-900 mb-2 group-hover:text-blue-600 transition-colors line-clamp-2 min-h-[3rem]">
                                     {course.title}
                                 </h3>
                                 <p className="text-sm text-slate-600 leading-relaxed mb-4 line-clamp-2">
@@ -73,6 +87,43 @@ const Courses = () => {
                             </div>
                         </Link>
                     ))}
+                </div>
+
+                {/* Pagination */}
+                <div className="mt-8 flex items-center justify-between">
+                    <div className="text-sm text-slate-600">
+                        Showing <span className="font-semibold text-slate-900">{Math.min(coursesData.length, startIndex + 1)}</span> - <span className="font-semibold text-slate-900">{Math.min(coursesData.length, startIndex + visibleCourses.length)}</span> of <span className="font-semibold text-slate-900">{coursesData.length}</span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                            disabled={currentPage === 1}
+                            className="px-3 py-1 rounded-md border bg-white text-sm disabled:opacity-50"
+                        >
+                            Prev
+                        </button>
+
+                        <div className="hidden sm:flex items-center gap-1">
+                            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                                <button
+                                    key={p}
+                                    onClick={() => setCurrentPage(p)}
+                                    className={`px-3 py-1 rounded-md text-sm border ${p === currentPage ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-700'}`}
+                                >
+                                    {p}
+                                </button>
+                            ))}
+                        </div>
+
+                        <button
+                            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                            disabled={currentPage === totalPages}
+                            className="px-3 py-1 rounded-md border bg-white text-sm disabled:opacity-50"
+                        >
+                            Next
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

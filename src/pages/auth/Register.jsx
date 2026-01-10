@@ -1,6 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import axiosInstance, { setAuthToken } from '../../config/axiosInstance'
+import axiosInstance from '../../config/axiosInstance'
+import { AuthContext } from '../../context/AuthContext'
+import { toast } from 'react-hot-toast'
 import { Mail, Lock, Eye, EyeOff, ArrowRight, BookOpen } from 'lucide-react'
 
 const Register = () => {
@@ -11,22 +13,32 @@ const Register = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const navigate = useNavigate()
+  const { login } = useContext(AuthContext)
 
   const submit = async (e) => {
     e.preventDefault()
     setLoading(true)
     setError(null)
     try {
-      const res = await axiosInstance.post('/auth/register', { name, email, password })
-      const token = res?.data?.token
+      // create user
+      await axiosInstance.post('/users/register', { name, email, password })
+      // login immediately to obtain token
+      const loginRes = await axiosInstance.post('/users/login', { email, password })
+      const token = loginRes?.data?.token
+      const user = loginRes?.data?.user
       if (token) {
-        setAuthToken(token)
+        login(token, user)
+        toast.success('Account created and signed in')
         navigate('/')
       } else {
-        setError('Registration failed')
+        const msg = 'Registration succeeded but login failed'
+        setError(msg)
+        toast.error(msg)
       }
     } catch (err) {
-      setError(err?.response?.data?.message || 'Registration failed')
+      const msg = err?.response?.data?.message || err?.message || 'Registration failed'
+      setError(msg)
+      toast.error(msg)
     } finally {
       setLoading(false)
     }
@@ -34,7 +46,7 @@ const Register = () => {
 
   const handleGoogleSignIn = () => {
     const base = axiosInstance?.defaults?.baseURL || ''
-    const url = `${base.replace(/\/$/, '')}/auth/google`
+    const url = `${base.replace(/\/$/, '')}/users/google`
     window.location.href = url
   }
 

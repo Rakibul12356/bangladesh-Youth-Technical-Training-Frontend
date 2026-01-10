@@ -1,10 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { Link } from 'react-router-dom'
 
 import { Mail, Lock, Eye, EyeOff, ArrowRight, BookOpen } from 'lucide-react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { useContext } from 'react'
 import { AuthContext } from '../../context/AuthContext'
+import { toast } from 'react-hot-toast'
+import axiosInstance from '../../config/axiosInstance'
 
 const Login = () => {
   const [email, setEmail] = useState('')
@@ -23,25 +24,41 @@ const Login = () => {
     setLoading(true)
     setError(null)
 
-    // Dummy authentication: accept any non-empty email/password
     if (!email || !password) {
       setError('Please enter email and password')
       setLoading(false)
       return
     }
 
-    // simulate async
-    setTimeout(() => {
-      login('dummy-token')
-      const dest = location.state?.from?.pathname || '/'
-      navigate(dest, { replace: true })
-    }, 500)
+    try {
+      const res = await axiosInstance.post('/users/login', { email, password })
+      const token = res?.data?.token
+      const user = res?.data?.user
+      if (token) {
+        login(token, user)
+        toast.success('Successfully signed in')
+        const dest = location.state?.from?.pathname || '/'
+        navigate(dest, { replace: true })
+      } else {
+        const msg = 'Invalid response from server'
+        setError(msg)
+        toast.error(msg)
+      }
+    } catch (err) {
+      console.error('Login error (frontend):', err)
+      const msg = err?.response?.data?.message || err?.message || 'Login failed'
+      setError(msg)
+      toast.error(msg)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleGoogleSignIn = () => {
-    // For dummy flow just log the user in as well
-    login('google-dummy-token')
-    navigate('/')
+    // Redirect to backend Google OAuth endpoint
+    const base = axiosInstance?.defaults?.baseURL || ''
+    const url = `${base.replace(/\/$/, '')}/users/google`
+    window.location.href = url
   }
 
   return (
@@ -56,24 +73,7 @@ const Login = () => {
             <h1 className="text-2xl font-bold mb-1">BYTT Center</h1>
             <p className="text-sm text-slate-500 mb-4 text-center">Welcome back! Please sign in to continue.</p>
 
-            <div className="w-full max-w-sm bg-blue-50 border-l-4 border-blue-200 p-3 rounded-md text-sm text-slate-700 mb-4">
-              <div className="font-semibold text-slate-800 mb-1">Demo credentials</div>
-              <div className="flex items-center justify-between">
-                <div className="text-xs text-slate-600">Email: <span className="font-medium">demo@bytt.test</span></div>
-                <button
-                  type="button"
-                  onClick={() => { navigator.clipboard?.writeText('demo@bytt.test') }}
-                  className="text-xs text-blue-600 hover:underline"
-                >Copy</button>
-              </div>
-              <div className="flex items-center justify-between mt-1">
-                <div className="text-xs text-slate-600">Password: <span className="font-medium">password123</span></div>
-                <button
-                  type="button"
-                  onClick={() => { navigator.clipboard?.writeText('password123') }}
-                  className="text-xs text-blue-600 hover:underline"
-                >Copy</button>
-              </div>
+            <div className="w-full max-w-sm bg-blue-50 p-3 rounded-md text-sm text-slate-700 mb-4">
             </div>
           </div>
 

@@ -6,11 +6,11 @@ import { AuthContext } from '../../context/AuthContext'
 const MENU_ITEMS = [
     'Home',
     'Courses',
-    'Verified Institutes',
+    // 'Verified Institutes',
     'Success Students',
     'Student Result',
-    'Institute Apply',
-    'Institute Login',
+    // 'Institute Apply',
+    // 'Institute Login',
     'Notice',
     'Contact Us',
 ]
@@ -19,7 +19,7 @@ const Navbar = () => {
     const [open, setOpen] = useState(false)
     const location = useLocation()
 
-    const { isAuthenticated, logout } = useContext(AuthContext)
+    const { isAuthenticated, logout, user } = useContext(AuthContext)
 
     return (
         <nav className="bg-white border-b border-gray-200 fixed md:sticky top-0 left-0 right-0 z-50 w-full shadow-sm">
@@ -50,6 +50,11 @@ const Navbar = () => {
                                 </Link>
                             )
                         })}
+                        {isAuthenticated && (
+                            <Link to={user?.role === 'admin' ? '/admin' : '/student'} className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100">
+                                Dashboard
+                            </Link>
+                        )}
                         {isAuthenticated ? (
                             <button onClick={() => { logout(); }} className="ml-4 px-4 py-2 bg-red-600 text-white rounded-md text-sm font-medium hover:bg-red-700">Logout</button>
                         ) : (
@@ -95,7 +100,20 @@ const Navbar = () => {
                             </Link>
                         )
                     })}
-                    { /* login link for mobile */}
+                    { /* dashboard link for mobile */}
+                    <div className="md:hidden px-2 pb-2">
+                        {isAuthenticated && (
+                            <Link
+                                to={user?.role === 'admin' ? '/admin' : '/student'}
+                                onClick={() => setOpen(false)}
+                                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100"
+                            >
+                                Dashboard
+                            </Link>
+                        )}
+                    </div>
+
+                    { /* login/logout link for mobile */}
                     <div className="md:hidden px-2 pb-4">
                         {isAuthenticated ? (
                             <button onClick={() => { logout(); setOpen(false) }} className="block w-full text-center px-3 py-2 rounded-md bg-red-600 text-white font-medium">Logout</button>

@@ -4,14 +4,30 @@ import axiosInstance, { setAuthToken, clearAuthToken } from '../config/axiosInst
 export const AuthContext = createContext({})
 
 export const AuthProvider = ({ children }) => {
-    const [isAuthenticated, setIsAuthenticated] = useState(false)
-    const [user, setUser] = useState(null)
+    const [isAuthenticated, setIsAuthenticated] = useState(() => {
+        try {
+            return !!localStorage.getItem('token')
+        } catch (e) {
+            return false
+        }
+    })
 
+    const [user, setUser] = useState(() => {
+        try {
+            const s = localStorage.getItem('user')
+            return s ? JSON.parse(s) : null
+        } catch (e) {
+            return null
+        }
+    })
+
+    // On mount ensure axios has the auth header if token exists
     useEffect(() => {
-        const token = localStorage.getItem('token')
-        if (token) {
-            setAuthToken(token)
-            setIsAuthenticated(true)
+        try {
+            const token = localStorage.getItem('token')
+            if (token) setAuthToken(token)
+        } catch (e) {
+            // ignore
         }
     }, [])
 
@@ -19,13 +35,17 @@ export const AuthProvider = ({ children }) => {
         if (!token) return
         setAuthToken(token)
         setIsAuthenticated(true)
-        if (userData) setUser(userData)
+        if (userData) {
+            setUser(userData)
+            try { localStorage.setItem('user', JSON.stringify(userData)) } catch (e) { }
+        }
     }
 
     const logout = () => {
         clearAuthToken()
         setIsAuthenticated(false)
         setUser(null)
+        try { localStorage.removeItem('user') } catch (e) { }
     }
 
     return (

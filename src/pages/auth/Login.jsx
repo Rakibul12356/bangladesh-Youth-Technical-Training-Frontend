@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { Mail, Lock, Eye, EyeOff, ArrowRight, BookOpen } from 'lucide-react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { AuthContext } from '../../context/AuthContext'
+import { setAuthToken } from '../../config/axiosInstance'
 import { toast } from 'react-hot-toast'
 import axiosInstance from '../../config/axiosInstance'
 
@@ -13,6 +14,8 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [emailError, setEmailError] = useState(null)
+  const [passwordError, setPasswordError] = useState(null)
 
 
   const navigate = useNavigate()
@@ -23,6 +26,8 @@ const Login = () => {
     e.preventDefault()
     setLoading(true)
     setError(null)
+    setEmailError(null)
+    setPasswordError(null)
 
     if (!email || !password) {
       setError('Please enter email and password')
@@ -35,10 +40,27 @@ const Login = () => {
       const token = res?.data?.token
       const user = res?.data?.user
       if (token) {
-        login(token, user)
+        if (typeof login === 'function') {
+          login(token, user)
+        } else {
+          // Fallback: ensure token/user stored and axios header set
+          try {
+            localStorage.setItem('token', token)
+            if (user) localStorage.setItem('user', JSON.stringify(user))
+          } catch (e) { }
+          try { setAuthToken(token) } catch (e) { }
+        }
         toast.success('Successfully signed in')
-        const dest = location.state?.from?.pathname || '/'
-        navigate(dest, { replace: true })
+        const dest = location.state?.from?.pathname
+        if (dest) {
+          navigate(dest, { replace: true })
+        } else {
+          // Redirect to role based dashboard when no previous destination
+          const role = user?.role
+          if (role === 'admin') navigate('/admin', { replace: true })
+          else if (role === 'student') navigate('/student', { replace: true })
+          else navigate('/', { replace: true })
+        }
       } else {
         const msg = 'Invalid response from server'
         setError(msg)
@@ -46,8 +68,14 @@ const Login = () => {
       }
     } catch (err) {
       console.error('Login error (frontend):', err)
-      const msg = err?.response?.data?.message || err?.message || 'Login failed'
-      setError(msg)
+      const respMsg = err?.response?.data?.message
+      const field = err?.response?.data?.field
+      const msg = respMsg || err?.message || 'Login failed'
+
+      if (field === 'email') setEmailError(msg)
+      else if (field === 'password') setPasswordError(msg)
+      else setError(msg)
+
       toast.error(msg)
     } finally {
       setLoading(false)
@@ -87,12 +115,13 @@ const Login = () => {
                 <input
                   type="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => { setEmail(e.target.value); setEmailError(null); }}
                   required
                   placeholder="student@example.com"
                   className="mt-1 block w-full rounded-lg border border-slate-200 px-3 py-3 pl-10 focus:ring-2 focus:ring-blue-100"
                 />
               </div>
+              {emailError && <div className="text-xs text-red-600 mt-1">{emailError}</div>}
             </div>
 
             <div>
@@ -105,7 +134,7 @@ const Login = () => {
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => { setPassword(e.target.value); setPasswordError(null); }}
                   required
                   placeholder="••••••••"
                   className="mt-1 block w-full rounded-lg border border-slate-200 px-3 py-3 pl-10 pr-10 focus:ring-2 focus:ring-blue-100"
@@ -120,6 +149,7 @@ const Login = () => {
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
+              {passwordError && <div className="text-xs text-red-600 mt-1">{passwordError}</div>}
               <Link to="/" className="text-xs text-blue-600">Forgot password?</Link>
             </div>
 

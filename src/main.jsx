@@ -7,7 +7,7 @@ import { Toaster } from 'react-hot-toast'
 
 createRoot(document.getElementById('root')).render(
     <AuthProvider>
-        <Toaster position="top-right" />
+        <Toaster position="top-center" />
         <AppRoutes />
     </AuthProvider>
 )

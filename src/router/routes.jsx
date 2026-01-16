@@ -13,6 +13,10 @@ import Notice from '../pages/Notice'
 import ContactUs from '../pages/ContactUs'
 import Login from '../pages/auth/Login'
 import Register from '../pages/auth/Register'
+import AdminDashboard from '../pages/admin/AdminDashboard'
+import AdminLayout from '../pages/admin/AdminLayout'
+import StudentDashboard from '../pages/student/StudentDashboard'
+import RoleProtectedRoute from '../components/RoleProtectedRoute'
 import { AuthProvider } from '../context/AuthContext'
 import ProtectedRoute from '../components/ProtectedRoute'
 
@@ -40,6 +44,14 @@ const AppRoutes = () => {
                     {/* Auth pages rendered outside MainLayout so they don't include Navbar/Footer */}
                     <Route path="/auth/login" element={<Login />} />
                     <Route path="/auth/register" element={<Register />} />
+                    {/* Role-based dashboards */}
+                    <Route path="/admin" element={<RoleProtectedRoute allowedRoles={["admin"]}><AdminLayout /></RoleProtectedRoute>}>
+                        <Route index element={<AdminDashboard />} />
+                        <Route path="courses" element={<Courses />} />
+                        <Route path="users" element={<VerifiedInstitutes />} />
+                    </Route>
+
+                    <Route path="/student" element={<RoleProtectedRoute allowedRoles={["student"]}><StudentDashboard /></RoleProtectedRoute>} />
                 </Routes>
             </AuthProvider>
         </BrowserRouter>

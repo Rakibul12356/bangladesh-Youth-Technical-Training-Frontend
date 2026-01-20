@@ -4,11 +4,10 @@ import MainLayout from '../layouts/MainLayout'
 import HomePage from '../pages/home/HomePage'
 import Courses from '../pages/Courses'
 import CourseDetails from '../pages/CourseDetails'
-import VerifiedInstitutes from '../pages/VerifiedInstitutes'
+import MyCourses from '../pages/MyCourses'
 import SuccessStudents from '../pages/SuccessStudents'
 import StudentResult from '../pages/StudentResult'
-import InstituteApply from '../pages/InstituteApply'
-import InstituteLogin from '../pages/InstituteLogin'
+
 import Notice from '../pages/Notice'
 import ContactUs from '../pages/ContactUs'
 import Login from '../pages/auth/Login'
@@ -19,6 +18,7 @@ import StudentDashboard from '../pages/student/StudentDashboard'
 import RoleProtectedRoute from '../components/RoleProtectedRoute'
 import { AuthProvider } from '../context/AuthContext'
 import ProtectedRoute from '../components/ProtectedRoute'
+import AllUsers from '../pages/admin/pages/AllUsers'
 
 const AppRoutes = () => {
     return (
@@ -32,11 +32,9 @@ const AppRoutes = () => {
                         {/* Protected pages (everything except home) */}
                         <Route path="courses" element={<ProtectedRoute><Courses /></ProtectedRoute>} />
                         <Route path="courses/:id" element={<ProtectedRoute><CourseDetails /></ProtectedRoute>} />
-                        <Route path="verified-institutes" element={<ProtectedRoute><VerifiedInstitutes /></ProtectedRoute>} />
+                        <Route path="my-courses" element={<ProtectedRoute><MyCourses /></ProtectedRoute>} />
                         <Route path="success-students" element={<ProtectedRoute><SuccessStudents /></ProtectedRoute>} />
                         <Route path="student-result" element={<ProtectedRoute><StudentResult /></ProtectedRoute>} />
-                        <Route path="institute-apply" element={<ProtectedRoute><InstituteApply /></ProtectedRoute>} />
-                        <Route path="institute-login" element={<ProtectedRoute><InstituteLogin /></ProtectedRoute>} />
                         <Route path="notice" element={<ProtectedRoute><Notice /></ProtectedRoute>} />
                         <Route path="contact-us" element={<ProtectedRoute><ContactUs /></ProtectedRoute>} />
                     </Route>
@@ -48,7 +46,7 @@ const AppRoutes = () => {
                     <Route path="/admin" element={<RoleProtectedRoute allowedRoles={["admin"]}><AdminLayout /></RoleProtectedRoute>}>
                         <Route index element={<AdminDashboard />} />
                         <Route path="courses" element={<Courses />} />
-                        <Route path="users" element={<VerifiedInstitutes />} />
+                        <Route path="users" element={<AllUsers/>} />
                     </Route>
 
                     <Route path="/student" element={<RoleProtectedRoute allowedRoles={["student"]}><StudentDashboard /></RoleProtectedRoute>} />

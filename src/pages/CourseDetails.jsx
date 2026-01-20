@@ -1,11 +1,44 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { Clock, BarChart, Users, Award, CheckCircle, ArrowRight } from 'lucide-react'
-import coursesData from '../data/coursesData.json'
+import { getCourseById } from '../config/apiFunction'
+import { createEnrollment } from '../config/apiFunction'
+import { useContext } from 'react'
+import { AuthContext } from '../context/AuthContext'
+import { toast } from 'react-hot-toast'
 
 const CourseDetails = () => {
     const { id } = useParams()
-    const course = coursesData.find(c => c.id === parseInt(id))
+    const [course, setCourse] = useState(null)
+    const [loading, setLoading] = useState(true)
+
+    useEffect(() => {
+        let mounted = true
+        const fetchCourse = async () => {
+            try {
+                setLoading(true)
+                const data = await getCourseById(id)
+                if (!mounted) return
+                setCourse(data)
+            } catch (err) {
+                console.error('Failed to load course', err)
+                setCourse(null)
+            } finally {
+                if (mounted) setLoading(false)
+            }
+        }
+        fetchCourse()
+        return () => { mounted = false }
+    }, [id])
+
+    if (loading) {
+        return (
+            <div className="max-w-4xl mx-auto px-6 py-20 text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+                <p className="mt-4 text-slate-600">Loading course...</p>
+            </div>
+        )
+    }
 
     if (!course) {
         return (
@@ -94,10 +127,7 @@ const CourseDetails = () => {
                                 </div>
                             </div>
 
-                            <button className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition-colors group">
-                                Enroll Now
-                                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                            </button>
+                            <EnrollButton courseId={course._id || course.id} />
 
                             <p className="text-xs text-slate-500 text-center mt-4">
                                 Limited seats available. Enroll today!
@@ -111,3 +141,33 @@ const CourseDetails = () => {
 }
 
 export default CourseDetails
+
+function EnrollButton({ courseId }) {
+    const { isAuthenticated, user } = useContext(AuthContext)
+    const [loading, setLoading] = useState(false)
+
+    const handleEnroll = async () => {
+        if (!isAuthenticated) {
+            toast.error('Please login to enroll')
+            return
+        }
+        try {
+            setLoading(true)
+            const res = await createEnrollment({ courseId })
+            toast.success('Enrollment request sent')
+        } catch (err) {
+            console.error('Enroll error', err)
+            const msg = err?.message || 'Failed to send enrollment request'
+            toast.error(msg)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    return (
+        <button disabled={loading} onClick={handleEnroll} className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition-colors group">
+            {loading ? 'Sending...' : 'Enroll Now'}
+            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+        </button>
+    )
+}

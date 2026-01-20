@@ -100,6 +100,44 @@ export async function uploadFile(path, formData, config = {}) {
   }
 }
 
+// ==================== Course API ====================
+export async function getAllCourses(params = {}) {
+  return getList("/courses", params);
+}
+
+export async function getCourseById(id) {
+  return getItem("/courses", id);
+}
+
+export async function createCourse(courseData) {
+  return createItem("/courses", courseData);
+}
+
+export async function updateCourse(id, courseData) {
+  return updateItem("/courses", id, courseData);
+}
+
+export async function deleteCourse(id) {
+  return deleteItem("/courses", id);
+}
+
+// ==================== Enrollment API ====================
+export async function createEnrollment(payload) {
+  return createItem("/enrollments", payload);
+}
+
+export async function getUserEnrollments() {
+  return getList("/enrollments/user");
+}
+
+export async function getPendingEnrollments() {
+  return getList("/enrollments/admin/pending");
+}
+
+export async function approveEnrollment(id) {
+  return updateItem("/enrollments", `${id}/approve`, {});
+}
+
 const api = {
   getList,
   getItem,
@@ -108,6 +146,17 @@ const api = {
   patchItem,
   deleteItem,
   uploadFile,
+  // Course APIs
+  getAllCourses,
+  getCourseById,
+  createCourse,
+  updateCourse,
+  deleteCourse,
+  // Enrollment APIs
+  createEnrollment,
+  getUserEnrollments,
+  getPendingEnrollments,
+  approveEnrollment,
 };
 
 export default api;

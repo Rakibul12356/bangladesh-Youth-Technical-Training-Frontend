@@ -51,9 +51,12 @@ const Navbar = () => {
                             )
                         })}
                         {isAuthenticated && (
-                            <Link to={user?.role === 'admin' ? '/admin' : '/student'} className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100">
-                                Dashboard
-                            </Link>
+                            <>
+                                <Link to="/my-courses" className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100">My Courses</Link>
+                                <Link to={user?.role === 'admin' ? '/admin' : '/student'} className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100">
+                                    Dashboard
+                                </Link>
+                            </>
                         )}
                         {isAuthenticated ? (
                             <button onClick={() => { logout(); }} className="ml-4 px-4 py-2 bg-red-600 text-white rounded-md text-sm font-medium hover:bg-red-700">Logout</button>

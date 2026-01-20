@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import coursesDataJson from '../data/coursesData.json'
 import { Clock, BarChart, Users, Plus, Funnel } from 'lucide-react'
 import AddCourseModal from '../components/modals/AddCourseModal'
 import { toast } from 'react-hot-toast'
+import { getAllCourses } from '../config/apiFunction'
 
 const ITEMS_PER_PAGE = 15
 
@@ -11,7 +11,25 @@ const Courses = () => {
     const [currentPage, setCurrentPage] = useState(1)
     const location = useLocation()
     const [showAdd, setShowAdd] = useState(false)
-    const [coursesData, setCoursesData] = useState(coursesDataJson)
+    const [coursesData, setCoursesData] = useState([])
+    const [loading, setLoading] = useState(true)
+
+    // Fetch courses from backend
+    useEffect(() => {
+        const fetchCourses = async () => {
+            try {
+                setLoading(true)
+                const data = await getAllCourses()
+                setCoursesData(data)
+            } catch (error) {
+                console.error('Failed to fetch courses:', error)
+                toast.error('Failed to load courses')
+            } finally {
+                setLoading(false)
+            }
+        }
+        fetchCourses()
+    }, [])
 
     const totalPages = Math.max(1, Math.ceil(coursesData.length / ITEMS_PER_PAGE))
 
@@ -27,6 +45,18 @@ const Courses = () => {
 
     const handleAddCourse = (c) => {
         setCoursesData((s) => [c, ...s])
+    }
+
+    // Show loading state
+    if (loading) {
+        return (
+            <div className="bg-slate-50 min-h-screen py-12">
+                <div className="max-w-7xl mx-auto px-6 text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+                    <p className="mt-4 text-slate-600">Loading courses...</p>
+                </div>
+            </div>
+        )
     }
 
     return (
@@ -85,21 +115,21 @@ const Courses = () => {
                                 </thead>
                                 <tbody>
                                     {coursesData.map((course) => (
-                                        <tr key={course.id} className="border-b">
+                                        <tr key={course._id || course.id} className="border-b">
                                             <td className="py-5">
-                                                <div className="font-semibold">{course.title}</div>
+                                                <div className="font-semibold">{course.title || course.name}</div>
                                                 <div className="text-xs text-slate-400">By {course.instructor || 'Unknown'}</div>
                                             </td>
                                             <td className="py-5">
-                                                <div className="font-semibold">${course.price}</div>
-                                                <div className="text-xs text-green-600">${(course.price * (course.students || 0)).toLocaleString()} total</div>
+                                                <div className="font-semibold">${course.price || 0}</div>
+                                                <div className="text-xs text-green-600">${((course.price || 0) * (course.students || 0)).toLocaleString()} total</div>
                                             </td>
                                             <td className="py-5">{course.students || 0}</td>
                                             <td className="py-5">
-                                                <span className={`px-3 py-1 rounded-full text-xs ${course.status === 'Active' ? 'bg-green-100 text-green-800' : course.status === 'Draft' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'}`}>{course.status}</span>
+                                                <span className={`px-3 py-1 rounded-full text-xs ${course.status === 'Active' ? 'bg-green-100 text-green-800' : course.status === 'Draft' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'}`}>{course.status || 'Active'}</span>
                                             </td>
                                             <td className="py-5 text-right">
-                                                <Link to={`/courses/${course.id}`} className="text-indigo-600">View</Link>
+                                                <Link to={`/courses/${course._id || course.id}`} className="text-indigo-600">View</Link>
                                             </td>
                                         </tr>
                                     ))}
@@ -111,26 +141,26 @@ const Courses = () => {
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr">
                         {visibleCourses.map((course) => (
                             <Link
-                                key={course.id}
-                                to={`/courses/${course.id}`}
+                                key={course._id || course.id}
+                                to={`/courses/${course._id || course.id}`}
                                 className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all border border-slate-200 group hover:border-blue-300 flex flex-col h-full"
                             >
                                 {/* Course Image */}
                                 <div className="relative h-48 overflow-hidden bg-slate-200">
                                     <img
-                                        src={course.image}
-                                        alt={course.title}
+                                        src={course.image || 'https://via.placeholder.com/400x300?text=Course+Image'}
+                                        alt={course.title || course.name}
                                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                     />
                                     <div className="absolute top-3 right-3 bg-white px-3 py-1 rounded-full text-xs font-semibold text-slate-700">
-                                        {course.level}
+                                        {course.level || 'Beginner'}
                                     </div>
                                 </div>
 
                                 {/* Course Content */}
                                 <div className="p-6 flex-1 flex flex-col justify-between">
                                     <h3 className="text-xl font-bold text-slate-900 mb-2 group-hover:text-blue-600 transition-colors line-clamp-2 min-h-[3rem]">
-                                        {course.title}
+                                        {course.title || course.name}
                                     </h3>
                                     <p className="text-sm text-slate-600 leading-relaxed mb-4 line-clamp-2">
                                         {course.description}
@@ -141,16 +171,16 @@ const Courses = () => {
                                         <div className="flex items-center gap-4 text-xs text-slate-500">
                                             <span className="flex items-center gap-1">
                                                 <Clock className="w-4 h-4" />
-                                                {course.duration}
+                                                {course.duration || 'N/A'}
                                             </span>
                                             <span className="flex items-center gap-1">
                                                 <Users className="w-4 h-4" />
-                                                {course.students}
+                                                {course.students || '0'}
                                             </span>
                                         </div>
                                         <div className="flex items-center gap-1 text-yellow-500 text-sm">
                                             <span>★</span>
-                                            <span className="font-semibold text-slate-700">{course.rating}</span>
+                                            <span className="font-semibold text-slate-700">{course.rating || '0.0'}</span>
                                         </div>
                                     </div>
                                 </div>

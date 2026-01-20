@@ -1,11 +1,30 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import coursesData from '../../../data/coursesData.json'
 import { Clock, BarChart } from 'lucide-react'
+import { getAllCourses } from '../../../config/apiFunction'
 
 const CoursesSection = () => {
-    // Show only first 6 courses on home page
-    const featuredCourses = coursesData.slice(0, 6)
+    const [coursesData, setCoursesData] = useState([])
+    const [loading, setLoading] = useState(true)
+
+    // Fetch featured courses (first 6)
+    useEffect(() => {
+        let mounted = true
+        const fetch = async () => {
+            try {
+                setLoading(true)
+                const data = await getAllCourses()
+                if (!mounted) return
+                setCoursesData(Array.isArray(data) ? data.slice(0, 6) : [])
+            } catch (err) {
+                console.error('Failed to load featured courses', err)
+            } finally {
+                if (mounted) setLoading(false)
+            }
+        }
+        fetch()
+        return () => { mounted = false }
+    }, [])
 
     return (
         <section className="py-16 bg-slate-50">
@@ -22,45 +41,48 @@ const CoursesSection = () => {
 
                 {/* Courses Grid */}
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {featuredCourses.map((course) => (
-                        <Link
-                            key={course.id}
-                            to={`/courses/${course.id}`}
-                            className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all border border-slate-200 group hover:border-blue-300"
-                        >
-                            {/* Course Image */}
-                            <div className="relative h-48 overflow-hidden bg-slate-200">
-                                <img
-                                    src={course.image}
-                                    alt={course.title}
-                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                />
-                                <div className="absolute top-3 right-3 bg-white px-3 py-1 rounded-full text-xs font-semibold text-slate-700">
-                                    {course.level}
-                                </div>
-                            </div>
-
-                            {/* Course Content */}
-                            <div className="p-6">
-                                <h3 className="text-xl font-bold text-slate-900 mb-2 group-hover:text-blue-600 transition-colors">
-                                    {course.title}
-                                </h3>
-                                <p className="text-sm text-slate-600 leading-relaxed mb-4 line-clamp-2">
-                                    {course.description}
-                                </p>
-
-                                <div className="flex items-center gap-4 text-xs text-slate-500">
-                                    <span className="flex items-center gap-1">
-                                        <Clock className="w-4 h-4" />
-                                        {course.duration}
-                                    </span>
-                                    <span className="px-2 py-1 bg-slate-100 rounded-full">
+                    {loading ? (
+                        <div className="col-span-3 text-center py-8">Loading courses...</div>
+                    ) :
+                        coursesData.map((course) => (
+                            <Link
+                                key={course._id || course.id}
+                                to={`/courses/${course._id || course.id}`}
+                                className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all border border-slate-200 group hover:border-blue-300"
+                            >
+                                {/* Course Image */}
+                                <div className="relative h-48 overflow-hidden bg-slate-200">
+                                    <img
+                                        src={course.image}
+                                        alt={course.title}
+                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                    />
+                                    <div className="absolute top-3 right-3 bg-white px-3 py-1 rounded-full text-xs font-semibold text-slate-700">
                                         {course.level}
-                                    </span>
+                                    </div>
                                 </div>
-                            </div>
-                        </Link>
-                    ))}
+
+                                {/* Course Content */}
+                                <div className="p-6">
+                                    <h3 className="text-xl font-bold text-slate-900 mb-2 group-hover:text-blue-600 transition-colors">
+                                        {course.title}
+                                    </h3>
+                                    <p className="text-sm text-slate-600 leading-relaxed mb-4 line-clamp-2">
+                                        {course.description}
+                                    </p>
+
+                                    <div className="flex items-center gap-4 text-xs text-slate-500">
+                                        <span className="flex items-center gap-1">
+                                            <Clock className="w-4 h-4" />
+                                            {course.duration}
+                                        </span>
+                                        <span className="px-2 py-1 bg-slate-100 rounded-full">
+                                            {course.level}
+                                        </span>
+                                    </div>
+                                </div>
+                            </Link>
+                        ))}
                 </div>
 
                 {/* View All Button */}

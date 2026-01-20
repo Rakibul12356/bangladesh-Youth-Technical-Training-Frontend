@@ -2,8 +2,15 @@
 /* eslint-disable no-unused-vars */
 import axios from "axios";
 
-const baseURL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
+// Normalize VITE_API_BASE_URL: ensure it points to the backend API root
+const rawBase = import.meta.env.VITE_API_BASE_URL || "";
+let baseURL = "http://localhost:5000/api";
+if (rawBase) {
+  // strip trailing slashes
+  const trimmed = rawBase.replace(/\/+$/g, "");
+  // ensure it ends with /api
+  baseURL = trimmed.endsWith("/api") ? trimmed : `${trimmed}/api`;
+}
 
 const axiosInstance = axios.create({
   baseURL,
@@ -21,11 +28,10 @@ axiosInstance.interceptors.request.use(
       if (token) config.headers.Authorization = `Bearer ${token}`;
     } catch (e) {
       // ignore
-      
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 // Basic response interceptor: on 401, clear token and redirect to login
@@ -41,7 +47,7 @@ axiosInstance.interceptors.response.use(
       if (typeof window !== "undefined") window.location.href = "/auth/login";
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 export function setAuthToken(token) {

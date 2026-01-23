@@ -4,7 +4,7 @@ import { Clock, BarChart, Users, Plus, Funnel } from 'lucide-react'
 import AddCourseModal from '../components/modals/AddCourseModal'
 import { AuthContext } from '../context/AuthContext'
 import { toast } from 'react-hot-toast'
-import { getAllCourses } from '../config/apiFunction'
+import { getAllCourses, createEnrollment } from '../config/apiFunction'
 
 const ITEMS_PER_PAGE = 15
 
@@ -61,7 +61,7 @@ const Courses = () => {
         } catch (e) { }
     }
 
-    const handleEnroll = (course) => {
+    const handleEnroll = async (course) => {
         if (!user) {
             navigate('/auth/login')
             return
@@ -71,19 +71,30 @@ const Courses = () => {
             return
         }
 
-        const teacherId = course.teacherId || null
-        const price = Number(course.price) || 0
-        const { adminShare, teacherShare } = processEnrollment(course, teacherId, price)
+        try {
+            // call backend to create enrollment (backend will compute splits and increment counts)
+            const payload = { courseId: course._id || course.id }
+            const res = await createEnrollment(payload)
 
-        // update local state student count
-        setCoursesData((prev) => prev.map((c) => {
-            if ((c._id || c.id) === (course._id || course.id)) {
-                return { ...c, students: (Number(c.students) || 0) + 1 }
-            }
-            return c
-        }))
+            // process frontend bookkeeping (balances)
+            const teacherId = course.teacherId || null
+            const price = Number(course.price) || 0
+            const { adminShare, teacherShare } = processEnrollment(course, teacherId, price)
 
-        toast.success(`Enrolled: $${price.toFixed(2)} — admin $${adminShare}, teacher $${teacherShare}`)
+            // update local state student count only after success
+            setCoursesData((prev) => prev.map((c) => {
+                if ((c._id || c.id) === (course._id || course.id)) {
+                    return { ...c, students: (Number(c.students) || 0) + 1 }
+                }
+                return c
+            }))
+
+            toast.success(`Enrolled: $${price.toFixed(2)} — admin $${adminShare}, teacher $${teacherShare}`)
+        } catch (err) {
+            console.error('Enroll failed', err)
+            const msg = err?.message || err?.data?.message || 'Failed to enroll'
+            toast.error(msg)
+        }
     }
 
     // Show loading state
@@ -195,8 +206,6 @@ const Courses = () => {
                         </div>
                     ))}
                 </div>
-                }
-
                 {/* Pagination */}
                 <div className="mt-8 flex items-center justify-between">
                     <div className="text-sm text-slate-600">

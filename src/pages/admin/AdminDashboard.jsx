@@ -18,16 +18,19 @@ import {
     ArrowDownRight
 } from 'lucide-react';
 
-const stats = [
-    { title: 'Total Students', value: '12,450', delta: '12%', isPositive: true, icon: Users, color: 'text-blue-600', bg: 'bg-blue-50' },
-    { title: 'Total Revenue', value: '$482,000', delta: '8%', isPositive: true, icon: DollarSign, color: 'text-emerald-600', bg: 'bg-emerald-50' },
-    { title: 'Active Courses', value: '5', delta: '-2%', isPositive: false, icon: BookOpen, color: 'text-violet-600', bg: 'bg-violet-50' },
-    { title: 'Completion Rate', value: '84.5%', delta: '5%', isPositive: true, icon: Activity, color: 'text-orange-600', bg: 'bg-orange-50' },
-];
+// initial placeholder values until we fetch real stats
+const initialStats = {
+    totalStudents: 0,
+    totalRevenue: 0,
+    activeCourses: 0,
+    completionRate: 0,
+};
 
 const AdminDashboard = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [statsData, setStatsData] = useState(initialStats);
+    const [statsLoading, setStatsLoading] = useState(true);
 
     useEffect(() => {
         let mounted = true;
@@ -42,6 +45,18 @@ const AdminDashboard = () => {
             }
         }
         loadUsers();
+        // load admin stats
+        (async function loadStats() {
+            try {
+                setStatsLoading(true);
+                const res = await axiosInstance.get('/admin/stats');
+                if (mounted && res && res.data) setStatsData(res.data);
+            } catch (e) {
+                console.error('Failed to fetch admin stats', e);
+            } finally {
+                if (mounted) setStatsLoading(false);
+            }
+        })();
         return () => { mounted = false };
     }, []);
 
@@ -79,23 +94,53 @@ const AdminDashboard = () => {
 
                 {/* Stats Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {stats.map((s, index) => (
-                        <div key={index} className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 hover:shadow-md transition-all duration-300">
-                            <div className="flex justify-between items-start mb-4">
-                                <div className={`p-3 rounded-xl ${s.bg}`}>
-                                    <s.icon className={`w-6 h-6 ${s.color}`} />
-                                </div>
-                                <span className={`flex items-center text-xs font-bold px-2.5 py-1 rounded-full ${s.isPositive ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'}`}>
-                                    {s.isPositive ? <ArrowUpRight className="w-3.5 h-3.5 mr-1" /> : <ArrowDownRight className="w-3.5 h-3.5 mr-1" />}
-                                    {s.delta}
-                                </span>
-                            </div>
-                            <div>
-                                <h3 className="text-2xl font-bold text-slate-900 tracking-tight">{s.value}</h3>
-                                <p className="text-sm text-slate-500 font-medium mt-1">{s.title}</p>
+                    <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 hover:shadow-md transition-all duration-300">
+                        <div className="flex justify-between items-start mb-4">
+                            <div className={`p-3 rounded-xl bg-blue-50`}>
+                                <Users className={`w-6 h-6 text-blue-600`} />
                             </div>
                         </div>
-                    ))}
+                        <div>
+                            <h3 className="text-2xl font-bold text-slate-900 tracking-tight">{statsLoading ? '—' : statsData.totalStudents.toLocaleString()}</h3>
+                            <p className="text-sm text-slate-500 font-medium mt-1">Total Students</p>
+                        </div>
+                    </div>
+
+                    <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 hover:shadow-md transition-all duration-300">
+                        <div className="flex justify-between items-start mb-4">
+                            <div className={`p-3 rounded-xl bg-emerald-50`}>
+                                <DollarSign className={`w-6 h-6 text-emerald-600`} />
+                            </div>
+                        </div>
+                        <div>
+                            <h3 className="text-2xl font-bold text-slate-900 tracking-tight">{statsLoading ? '—' : `$${Number(statsData.totalRevenue || 0).toFixed(2)}`}</h3>
+                            <p className="text-sm text-slate-500 font-medium mt-1">Total Revenue</p>
+                        </div>
+                    </div>
+
+                    <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 hover:shadow-md transition-all duration-300">
+                        <div className="flex justify-between items-start mb-4">
+                            <div className={`p-3 rounded-xl bg-violet-50`}>
+                                <BookOpen className={`w-6 h-6 text-violet-600`} />
+                            </div>
+                        </div>
+                        <div>
+                            <h3 className="text-2xl font-bold text-slate-900 tracking-tight">{statsLoading ? '—' : statsData.activeCourses}</h3>
+                            <p className="text-sm text-slate-500 font-medium mt-1">Active Courses</p>
+                        </div>
+                    </div>
+
+                    <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 hover:shadow-md transition-all duration-300">
+                        <div className="flex justify-between items-start mb-4">
+                            <div className={`p-3 rounded-xl bg-orange-50`}>
+                                <Activity className={`w-6 h-6 text-orange-600`} />
+                            </div>
+                        </div>
+                        <div>
+                            <h3 className="text-2xl font-bold text-slate-900 tracking-tight">{statsLoading ? '—' : `${statsData.completionRate}%`}</h3>
+                            <p className="text-sm text-slate-500 font-medium mt-1">Completion Rate</p>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Recent Registrations Section */}
@@ -181,10 +226,10 @@ const AdminDashboard = () => {
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${u.role === 'Admin'
-                                                    ? 'bg-purple-50 text-purple-700 border-purple-100'
-                                                    : u.role === 'Instructor'
-                                                        ? 'bg-indigo-50 text-indigo-700 border-indigo-100'
-                                                        : 'bg-blue-50 text-blue-700 border-blue-100'
+                                                ? 'bg-purple-50 text-purple-700 border-purple-100'
+                                                : u.role === 'Instructor'
+                                                    ? 'bg-indigo-50 text-indigo-700 border-indigo-100'
+                                                    : 'bg-blue-50 text-blue-700 border-blue-100'
                                                 }`}>
                                                 {u.role}
                                             </span>

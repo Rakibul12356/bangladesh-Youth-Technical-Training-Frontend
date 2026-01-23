@@ -14,9 +14,11 @@ import Login from '../pages/auth/Login'
 import Register from '../pages/auth/Register'
 import AdminDashboard from '../pages/admin/AdminDashboard'
 import AdminLayout from '../pages/admin/AdminLayout'
+import AdminCourses from '../pages/admin/AdminCourses'
 import StudentDashboard from '../pages/student/StudentDashboard'
 import TeacherDashboard from '../pages/teacher/TeacherDashboard'
 import TeacherLayout from '../pages/teacher/TeacherLayout'
+import TeacherCourses from '../pages/teacher/TeacherCourses'
 import RoleProtectedRoute from '../components/RoleProtectedRoute'
 import { AuthProvider } from '../context/AuthContext'
 import ProtectedRoute from '../components/ProtectedRoute'
@@ -31,9 +33,9 @@ const AppRoutes = () => {
                     <Route path="/" element={<MainLayout />}>
                         <Route index element={<HomePage />} />
 
-                        {/* Protected pages (students only where appropriate) */}
-                        <Route path="courses" element={<RoleProtectedRoute allowedRoles={["student"]}><Courses /></RoleProtectedRoute>} />
-                        <Route path="courses/:id" element={<RoleProtectedRoute allowedRoles={["student"]}><CourseDetails /></RoleProtectedRoute>} />
+                        {/* Public courses listing and details (viewable by all) */}
+                        <Route path="courses" element={<Courses />} />
+                        <Route path="courses/:id" element={<CourseDetails />} />
                         <Route path="my-courses" element={<RoleProtectedRoute allowedRoles={["student"]}><MyCourses /></RoleProtectedRoute>} />
                         <Route path="success-students" element={<ProtectedRoute><SuccessStudents /></ProtectedRoute>} />
                         <Route path="student-result" element={<ProtectedRoute><StudentResult /></ProtectedRoute>} />
@@ -47,13 +49,14 @@ const AppRoutes = () => {
                     {/* Role-based dashboards */}
                     <Route path="/admin" element={<RoleProtectedRoute allowedRoles={["admin"]}><AdminLayout /></RoleProtectedRoute>}>
                         <Route index element={<AdminDashboard />} />
-                        <Route path="courses" element={<Courses />} />
+                        <Route path="courses" element={<AdminCourses />} />
                         <Route path="users" element={<AllUsers />} />
                     </Route>
 
                     <Route path="/student" element={<RoleProtectedRoute allowedRoles={["student"]}><StudentDashboard /></RoleProtectedRoute>} />
                     <Route path="/teacher" element={<RoleProtectedRoute allowedRoles={["teacher"]}><TeacherLayout /></RoleProtectedRoute>}>
                         <Route index element={<TeacherDashboard />} />
+                        <Route path="courses" element={<TeacherCourses />} />
                     </Route>
                 </Routes>
             </AuthProvider>

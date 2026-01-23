@@ -1,10 +1,10 @@
 import React, { useContext, useState, useRef, useEffect } from 'react'
 import { NavLink, Link } from 'react-router-dom'
-import { Home, Grid, BookOpen, Users, Settings, LogOut, Menu, X } from 'lucide-react'
+import { Home, Grid, BookOpen, Users, Settings, LogOut, Menu, X, User } from 'lucide-react'
 import { AuthContext } from '../context/AuthContext'
 
 const Sidebar = ({ role = 'student' }) => {
-    const { logout } = useContext(AuthContext)
+    const { logout, user } = useContext(AuthContext)
     const [isOpen, setIsOpen] = useState(false)
     const drawerRef = useRef(null)
 
@@ -53,6 +53,17 @@ const Sidebar = ({ role = 'student' }) => {
                             <NavLink end to="/admin/users" className={({ isActive }) => `${baseItemClass} ${isActive ? activeClass : 'text-white/90 hover:bg-white/5'}`}>
                                 <Users className="w-5 h-5" />
                                 <span>Students</span>
+                            </NavLink>
+                        </>
+                    ) : role === 'teacher' ? (
+                        <>
+                            <NavLink end to="/teacher/courses" className={({ isActive }) => `${baseItemClass} ${isActive ? activeClass : 'text-white/90 hover:bg-white/5'}`}>
+                                <BookOpen className="w-5 h-5" />
+                                <span>My Courses</span>
+                            </NavLink>
+                            <NavLink end to="/teacher/profile" className={({ isActive }) => `${baseItemClass} ${isActive ? activeClass : 'text-white/90 hover:bg-white/5'}`}>
+                                <User className="w-5 h-5" />
+                                <span>Profile</span>
                             </NavLink>
                         </>
                     ) : (
@@ -115,6 +126,17 @@ const Sidebar = ({ role = 'student' }) => {
                             <NavLink end to="/admin/users" onClick={() => setIsOpen(false)} className={({ isActive }) => `${baseItemClass} ${isActive ? activeClass : 'text-white/90 hover:bg-white/5'}`}>
                                 <Users className="w-5 h-5" />
                                 <span>Students</span>
+                            </NavLink>
+                        </>
+                    ) : role === 'teacher' ? (
+                        <>
+                            <NavLink end to="/teacher/courses" onClick={() => setIsOpen(false)} className={({ isActive }) => `${baseItemClass} ${isActive ? activeClass : 'text-white/90 hover:bg-white/5'}`}>
+                                <BookOpen className="w-5 h-5" />
+                                <span>My Courses</span>
+                            </NavLink>
+                            <NavLink end to="/teacher/profile" onClick={() => setIsOpen(false)} className={({ isActive }) => `${baseItemClass} ${isActive ? activeClass : 'text-white/90 hover:bg-white/5'}`}>
+                                <User className="w-5 h-5" />
+                                <span>Profile</span>
                             </NavLink>
                         </>
                     ) : (

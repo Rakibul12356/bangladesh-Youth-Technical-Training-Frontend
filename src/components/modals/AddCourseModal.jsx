@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { X } from 'lucide-react'
 import { toast } from 'react-hot-toast'
+import { createCourseWithAuth } from '../../config/apiFunction'
 
 const AddCourseModal = ({ open, onClose, onAdd, currentUser }) => {
     const [form, setForm] = useState({
@@ -27,10 +28,9 @@ const AddCourseModal = ({ open, onClose, onAdd, currentUser }) => {
 
     const handleChange = (e) => setForm((s) => ({ ...s, [e.target.name]: e.target.value }))
 
-    const submit = (e) => {
+    const submit = async (e) => {
         e.preventDefault()
-        const newCourse = {
-            id: Date.now().toString(),
+        const payload = {
             title: form.title || 'Untitled Course',
             instructor: form.instructor || 'Unknown',
             price: parseFloat(form.price) || 0,
@@ -42,9 +42,21 @@ const AddCourseModal = ({ open, onClose, onAdd, currentUser }) => {
             level: form.level,
             rating: form.rating || '0',
         }
-        onAdd(newCourse)
-        toast.success('Course added')
-        onClose()
+
+        // attach teacher id if currentUser is a teacher
+        if (currentUser && (currentUser.role === 'teacher' || String(currentUser.role).toLowerCase() === 'teacher')) {
+            payload.teacherId = currentUser._id || currentUser.id || null
+        }
+
+        try {
+            const saved = await createCourseWithAuth(payload)
+            onAdd(saved)
+            toast.success('Course added successfully')
+            onClose()
+        } catch (err) {
+            console.error('Failed to create course:', err)
+            toast.error(err?.message || 'Failed to create course')
+        }
     }
 
     return (
@@ -70,7 +82,7 @@ const AddCourseModal = ({ open, onClose, onAdd, currentUser }) => {
                     </div>
                     <div>
                         <label className="block text-xs text-slate-600">Price</label>
-                        <input name="price" value={form.price} onChange={handleChange} className="mt-1 w-full border rounded px-3 py-2" />
+                        <input type="number" step="0.01" name="price" value={form.price} onChange={handleChange} className="mt-1 w-full border rounded px-3 py-2" />
                     </div>
                     <div>
                         <label className="block text-xs text-slate-600">Students</label>

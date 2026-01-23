@@ -113,6 +113,10 @@ export async function createCourse(courseData) {
   return createItem("/courses", courseData);
 }
 
+export async function createCourseWithAuth(courseData) {
+  return createItem("/courses", courseData);
+}
+
 export async function updateCourse(id, courseData) {
   return updateItem("/courses", id, courseData);
 }

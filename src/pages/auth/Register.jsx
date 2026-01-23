@@ -52,11 +52,11 @@ const Register = () => {
     }
   }
 
-  const handleGoogleSignIn = () => {
-    const base = axiosInstance?.defaults?.baseURL || ''
-    const url = `${base.replace(/\/$/, '')}/users/google`
-    window.location.href = url
-  }
+  // const handleGoogleSignIn = () => {
+  //   const base = axiosInstance?.defaults?.baseURL || ''
+  //   const url = `${base.replace(/\/$/, '')}/users/google`
+  //   window.location.href = url
+  // }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-linear-to-b from-white to-sky-50 py-12 px-4">
@@ -140,7 +140,7 @@ const Register = () => {
                   </label>
                 </div>
               </div>
-              <button
+              {/* <button
                 type="button"
                 onClick={handleGoogleSignIn}
                 className="w-full bg-white border hover:shadow-sm text-slate-700 py-3 rounded-lg flex items-center justify-center gap-3"
@@ -152,7 +152,7 @@ const Register = () => {
                   <path d="M272 107.7c39 0 74 13.5 101.6 39l76.1-76.1C407.7 24.7 345.7 0 272 0 167.1 0 74.6 54.5 29.6 144.7l88.8 70.9C140 155.9 200.6 107.7 272 107.7z" fill="#EA4335" />
                 </svg>
                 <span className="font-medium">Sign up with Google</span>
-              </button>
+              </button> */}
 
               <button type="submit" disabled={loading} className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg flex items-center justify-center gap-3">
                 <span className="font-medium">{loading ? 'Creating...' : 'Create Account'}</span>
@@ -161,14 +161,14 @@ const Register = () => {
             </div>
 
             <p className="text-center text-sm text-slate-500">Already have an account? <Link to="/auth/login" className="text-blue-600 font-medium">Sign in</Link></p>
-
+{/* 
             <div className="mt-6">
               <div className="flex items-center">
                 <div className="flex-grow border-t border-slate-200"></div>
                 <div className="px-4 text-xs text-slate-400">GOVT. APPROVED</div>
                 <div className="flex-grow border-t border-slate-200"></div>
               </div>
-            </div>
+            </div> */}
           </form>
         </div>
       </div>

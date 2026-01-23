@@ -102,8 +102,7 @@ const Login = () => {
             <h1 className="text-2xl font-bold mb-1">BYTT Center</h1>
             <p className="text-sm text-slate-500 mb-4 text-center">Welcome back! Please sign in to continue.</p>
 
-            <div className="w-full max-w-sm bg-blue-50 p-3 rounded-md text-sm text-slate-700 mb-4">
-            </div>
+            
           </div>
 
           {error && <div className="text-sm text-red-600 mb-3 text-center">{error}</div>}
@@ -165,14 +164,14 @@ const Login = () => {
                 <span className="font-medium">{loading ? 'Signing in...' : 'Sign In'}</span>
                 <ArrowRight className="w-4 h-4 text-white" />
               </button>
-              <div className="mt-6">
+              {/* <div className="mt-6">
                 <div className="flex items-center">
                   <div className="grow border-t border-slate-200"></div>
                   <div className="px-4 text-xs text-slate-400">Or</div>
                   <div className="grow border-t border-slate-200"></div>
                 </div>
-              </div>
-              <button
+              </div> */}
+              {/* <button
                 type="button"
                 onClick={handleGoogleSignIn}
                 className="w-full bg-white border hover:shadow-sm text-slate-700 py-3 rounded-lg flex items-center justify-center gap-3"
@@ -184,7 +183,7 @@ const Login = () => {
                   <path d="M272 107.7c39 0 74 13.5 101.6 39l76.1-76.1C407.7 24.7 345.7 0 272 0 167.1 0 74.6 54.5 29.6 144.7l88.8 70.9C140 155.9 200.6 107.7 272 107.7z" fill="#EA4335" />
                 </svg>
                 <span className="font-medium">Sign in with Google</span>
-              </button>
+              </button> */}
             </div>
 
             <p className="text-center text-sm text-slate-500">Don't have an account? <Link to="/auth/register" className="text-blue-600 font-medium">Create Account</Link></p>

@@ -1,17 +1,24 @@
-import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import React, { useEffect, useState, useContext } from 'react'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { Clock, BarChart, Users, Award, CheckCircle, ArrowRight } from 'lucide-react'
 import { getCourseById } from '../config/apiFunction'
 import { createEnrollment } from '../config/apiFunction'
-import { useContext } from 'react'
 import { AuthContext } from '../context/AuthContext'
 import { toast } from 'react-hot-toast'
 
 const CourseDetails = () => {
     const { id } = useParams()
+    const { isAuthenticated } = useContext(AuthContext)
+    const navigate = useNavigate()
+    const location = useLocation()
     const [course, setCourse] = useState(null)
     const [loading, setLoading] = useState(true)
 
+    useEffect(() => {
+        if (!isAuthenticated) {
+            navigate('/auth/login', { state: { from: location }, replace: true })
+        }
+    }, [isAuthenticated, navigate, location])
     useEffect(() => {
         let mounted = true
         const fetchCourse = async () => {

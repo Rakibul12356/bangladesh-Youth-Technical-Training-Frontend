@@ -9,6 +9,7 @@ const Register = () => {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [role, setRole] = useState('student')
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -20,8 +21,11 @@ const Register = () => {
     setLoading(true)
     setError(null)
     try {
+      // normalize role client-side and log payload for debugging
+      const payloadRole = role && typeof role === 'string' ? role.trim().toLowerCase() : 'student'
+      console.log('Register: sending payload', { name, email, role: payloadRole })
       // create user
-      await axiosInstance.post('/users/register', { name, email, password })
+      await axiosInstance.post('/users/register', { name, email, password, role: payloadRole })
       // login immediately to obtain token
       const loginRes = await axiosInstance.post('/users/login', { email, password })
       const token = loginRes?.data?.token
@@ -29,7 +33,11 @@ const Register = () => {
       if (token) {
         login(token, user)
         toast.success('Account created and signed in')
-        navigate('/')
+        const role = user?.role
+        if (role === 'admin') navigate('/admin', { replace: true })
+        else if (role === 'student') navigate('/student', { replace: true })
+        else if (role === 'teacher') navigate('/teacher', { replace: true })
+        else navigate('/', { replace: true })
       } else {
         const msg = 'Registration succeeded but login failed'
         setError(msg)
@@ -119,6 +127,19 @@ const Register = () => {
             </div>
 
             <div className="space-y-3">
+              <div>
+                <label className="block text-xs text-slate-600 mb-1">Register as</label>
+                <div className="flex items-center gap-4">
+                  <label className="inline-flex items-center gap-2 text-sm">
+                    <input type="radio" name="role" value="student" checked={role === 'student'} onChange={() => setRole('student')} />
+                    <span>Student</span>
+                  </label>
+                  <label className="inline-flex items-center gap-2 text-sm">
+                    <input type="radio" name="role" value="teacher" checked={role === 'teacher'} onChange={() => setRole('teacher')} />
+                    <span>Teacher</span>
+                  </label>
+                </div>
+              </div>
               <button
                 type="button"
                 onClick={handleGoogleSignIn}

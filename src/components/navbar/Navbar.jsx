@@ -20,6 +20,7 @@ const Navbar = () => {
     const location = useLocation()
 
     const { isAuthenticated, logout, user } = useContext(AuthContext)
+    const userRole = user?.role ? String(user.role).toLowerCase() : null
 
     return (
         <nav className="bg-white border-b border-gray-200 fixed md:sticky top-0 left-0 right-0 z-50 w-full shadow-sm">
@@ -52,8 +53,10 @@ const Navbar = () => {
                         })}
                         {isAuthenticated && (
                             <>
-                                <Link to="/my-courses" className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100">My Courses</Link>
-                                <Link to={user?.role === 'admin' ? '/admin' : '/student'} className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100">
+                                {userRole === 'student' && (
+                                    <Link to="/my-courses" className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100">My Courses</Link>
+                                )}
+                                <Link to={userRole === 'admin' ? '/admin' : userRole === 'teacher' ? '/teacher' : '/student'} className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100">
                                     Dashboard
                                 </Link>
                             </>
@@ -107,7 +110,7 @@ const Navbar = () => {
                     <div className="md:hidden px-2 pb-2">
                         {isAuthenticated && (
                             <Link
-                                to={user?.role === 'admin' ? '/admin' : '/student'}
+                                to={userRole === 'admin' ? '/admin' : userRole === 'teacher' ? '/teacher' : '/student'}
                                 onClick={() => setOpen(false)}
                                 className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100"
                             >

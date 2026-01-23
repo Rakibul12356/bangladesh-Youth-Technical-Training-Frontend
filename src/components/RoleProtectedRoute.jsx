@@ -9,8 +9,9 @@ const RoleProtectedRoute = ({ allowedRoles = [], children }) => {
         return <Navigate to="/auth/login" replace />
     }
 
-    const role = user?.role
-    if (!role || !allowedRoles.includes(role)) {
+    const role = user?.role ? String(user.role).toLowerCase() : null
+    const allowed = allowedRoles.map(r => String(r).toLowerCase())
+    if (!role || !allowed.includes(role)) {
         return <Navigate to="/" replace />
     }
 

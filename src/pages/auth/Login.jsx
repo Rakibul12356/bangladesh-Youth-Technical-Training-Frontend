@@ -59,6 +59,7 @@ const Login = () => {
           const role = user?.role
           if (role === 'admin') navigate('/admin', { replace: true })
           else if (role === 'student') navigate('/student', { replace: true })
+          else if (role === 'teacher') navigate('/teacher', { replace: true })
           else navigate('/', { replace: true })
         }
       } else {

@@ -31,14 +31,14 @@ const Sidebar = ({ role = 'student' }) => {
                         <div className="w-10 h-10 rounded-md bg-gradient-to-tr from-purple-600 to-pink-500 flex items-center justify-center text-white font-bold">BY</div>
                         <div>
                             <div className="text-lg font-semibold">BYTTC</div>
-                            <div className="text-xs text-white/70">{role === 'admin' ? 'Administrator' : 'Student'}</div>
+                            <div className="text-xs text-white/70">{role === 'admin' ? 'Administrator' : role === 'teacher' ? 'Teacher' : 'Student'}</div>
                         </div>
                     </Link>
                 </div>
 
                 <nav className="flex-1 px-3 py-6 space-y-2 overflow-hidden">
                     <div className="text-xs text-white/50 px-4 mb-2 uppercase">Overview</div>
-                    <NavLink end to={role === 'admin' ? '/admin' : '/student'} className={({ isActive }) => `${baseItemClass} ${isActive ? activeClass : 'text-white/90 hover:bg-white/5'}`}>
+                    <NavLink end to={role === 'admin' ? '/admin' : role === 'teacher' ? '/teacher' : '/student'} className={({ isActive }) => `${baseItemClass} ${isActive ? activeClass : 'text-white/90 hover:bg-white/5'}`}>
                         <Grid className="w-5 h-5" />
                         <span>Dashboard</span>
                     </NavLink>
@@ -90,7 +90,7 @@ const Sidebar = ({ role = 'student' }) => {
                         <div className="w-10 h-10 rounded-md bg-gradient-to-tr from-purple-600 to-pink-500 flex items-center justify-center text-white font-bold">BY</div>
                         <div>
                             <div className="text-lg font-semibold">BYTTC</div>
-                            <div className="text-xs text-white/70">{role === 'admin' ? 'Administrator' : 'Student'}</div>
+                            <div className="text-xs text-white/70">{role === 'admin' ? 'Administrator' : role === 'teacher' ? 'Teacher' : 'Student'}</div>
                         </div>
                     </Link>
                     <button onClick={() => setIsOpen(false)} className="p-2 rounded hover:bg-white/5">
@@ -100,7 +100,7 @@ const Sidebar = ({ role = 'student' }) => {
 
                 <nav className="flex-1 px-3 py-6 space-y-2">
                     <div className="text-xs text-white/50 px-4 mb-2 uppercase">Overview</div>
-                    <NavLink end to={role === 'admin' ? '/admin' : '/student'} onClick={() => setIsOpen(false)} className={({ isActive }) => `${baseItemClass} ${isActive ? activeClass : 'text-white/90 hover:bg-white/5'}`}>
+                    <NavLink end to={role === 'admin' ? '/admin' : role === 'teacher' ? '/teacher' : '/student'} onClick={() => setIsOpen(false)} className={({ isActive }) => `${baseItemClass} ${isActive ? activeClass : 'text-white/90 hover:bg-white/5'}`}>
                         <Grid className="w-5 h-5" />
                         <span>Dashboard</span>
                     </NavLink>
@@ -149,7 +149,7 @@ const Sidebar = ({ role = 'student' }) => {
                     </button>
                     <div>
                         <div className="text-lg font-semibold">BYTTC</div>
-                        <div className="text-xs text-slate-400">{role === 'admin' ? 'Admin' : 'Student'}</div>
+                        <div className="text-xs text-slate-400">{role === 'admin' ? 'Admin' : role === 'teacher' ? 'Teacher' : 'Student'}</div>
                     </div>
                 </div>
                 <Link to="/" className="inline-flex items-center gap-2 px-3 py-2 rounded bg-blue-600 text-white text-sm">

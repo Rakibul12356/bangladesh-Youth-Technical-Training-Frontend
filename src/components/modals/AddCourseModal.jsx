@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { X } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 
-const AddCourseModal = ({ open, onClose, onAdd }) => {
+const AddCourseModal = ({ open, onClose, onAdd, currentUser }) => {
     const [form, setForm] = useState({
         title: '',
         instructor: '',
@@ -15,6 +15,13 @@ const AddCourseModal = ({ open, onClose, onAdd }) => {
         level: 'Beginner',
         rating: '4.5',
     })
+
+    // If a teacher opens the modal, prefill the instructor
+    React.useEffect(() => {
+        if (open && currentUser) {
+            setForm((s) => ({ ...s, instructor: currentUser.name || s.instructor }))
+        }
+    }, [open, currentUser])
 
     if (!open) return null
 

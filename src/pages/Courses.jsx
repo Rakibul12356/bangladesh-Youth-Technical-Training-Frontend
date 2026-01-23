@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import React, { useEffect, useState, useContext } from 'react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Clock, BarChart, Users, Plus, Funnel } from 'lucide-react'
 import AddCourseModal from '../components/modals/AddCourseModal'
+import { AuthContext } from '../context/AuthContext'
 import { toast } from 'react-hot-toast'
 import { getAllCourses } from '../config/apiFunction'
 
@@ -13,6 +14,8 @@ const Courses = () => {
     const [showAdd, setShowAdd] = useState(false)
     const [coursesData, setCoursesData] = useState([])
     const [loading, setLoading] = useState(true)
+    const { user, processEnrollment } = useContext(AuthContext)
+    const navigate = useNavigate()
 
     // Fetch courses from backend
     useEffect(() => {
@@ -21,6 +24,7 @@ const Courses = () => {
                 setLoading(true)
                 const data = await getAllCourses()
                 setCoursesData(data)
+                try { localStorage.setItem('courses', JSON.stringify(data)) } catch (e) { }
             } catch (error) {
                 console.error('Failed to fetch courses:', error)
                 toast.error('Failed to load courses')
@@ -42,9 +46,45 @@ const Courses = () => {
     const visibleCourses = coursesData.slice(startIndex, startIndex + ITEMS_PER_PAGE)
 
     const isAdminView = location.pathname.startsWith('/admin')
+    const isTeacher = user?.role === 'teacher'
+    const isStudent = user?.role === 'student'
 
     const handleAddCourse = (c) => {
-        setCoursesData((s) => [c, ...s])
+        const enhanced = {
+            ...c,
+            teacherId: (user && (user._id || user.id)) || null,
+            instructor: user?.name || c.instructor || 'Unknown',
+        }
+        setCoursesData((s) => [enhanced, ...s])
+        try {
+            const prev = JSON.parse(localStorage.getItem('courses') || '[]')
+            localStorage.setItem('courses', JSON.stringify([enhanced, ...prev]))
+        } catch (e) { }
+    }
+
+    const handleEnroll = (course) => {
+        if (!user) {
+            navigate('/auth/login')
+            return
+        }
+        if (!isStudent) {
+            toast.error('Only students can enroll in courses')
+            return
+        }
+
+        const teacherId = course.teacherId || null
+        const price = Number(course.price) || 0
+        const { adminShare, teacherShare } = processEnrollment(course, teacherId, price)
+
+        // update local state student count
+        setCoursesData((prev) => prev.map((c) => {
+            if ((c._id || c.id) === (course._id || course.id)) {
+                return { ...c, students: (Number(c.students) || 0) + 1 }
+            }
+            return c
+        }))
+
+        toast.success(`Enrolled: $${price.toFixed(2)} — admin $${adminShare}, teacher $${teacherShare}`)
     }
 
     // Show loading state
@@ -63,7 +103,7 @@ const Courses = () => {
         <div className="bg-slate-50 min-h-screen py-12">
             <div className="max-w-7xl mx-auto px-6">
                 {/* Header */}
-                {isAdminView ? (
+                {(isAdminView || isTeacher) ? (
                     <div className="mb-8 flex items-center justify-between">
                         <div>
                             <h1 className="text-2xl font-bold text-slate-900">Courses Directory</h1>
@@ -97,7 +137,7 @@ const Courses = () => {
                     </div>
                 )}
 
-                <AddCourseModal open={showAdd} onClose={() => setShowAdd(false)} onAdd={handleAddCourse} />
+                <AddCourseModal open={showAdd} onClose={() => setShowAdd(false)} onAdd={handleAddCourse} currentUser={user} />
 
                 {/* Courses Grid */}
                 {isAdminView ? (
@@ -140,12 +180,7 @@ const Courses = () => {
                 ) : (
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr">
                         {visibleCourses.map((course) => (
-                            <Link
-                                key={course._id || course.id}
-                                to={`/courses/${course._id || course.id}`}
-                                className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all border border-slate-200 group hover:border-blue-300 flex flex-col h-full"
-                            >
-                                {/* Course Image */}
+                            <div key={course._id || course.id} className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all border border-slate-200 group hover:border-blue-300 flex flex-col h-full">
                                 <div className="relative h-48 overflow-hidden bg-slate-200">
                                     <img
                                         src={course.image || 'https://via.placeholder.com/400x300?text=Course+Image'}
@@ -157,34 +192,46 @@ const Courses = () => {
                                     </div>
                                 </div>
 
-                                {/* Course Content */}
                                 <div className="p-6 flex-1 flex flex-col justify-between">
-                                    <h3 className="text-xl font-bold text-slate-900 mb-2 group-hover:text-blue-600 transition-colors line-clamp-2 min-h-[3rem]">
-                                        {course.title || course.name}
-                                    </h3>
-                                    <p className="text-sm text-slate-600 leading-relaxed mb-4 line-clamp-2">
-                                        {course.description}
-                                    </p>
+                                    <div>
+                                        <h3 className="text-xl font-bold text-slate-900 mb-2 group-hover:text-blue-600 transition-colors line-clamp-2 min-h-[3rem]">
+                                            {course.title || course.name}
+                                        </h3>
+                                        <p className="text-sm text-slate-600 leading-relaxed mb-4 line-clamp-2">
+                                            {course.description}
+                                        </p>
+                                    </div>
 
-                                    {/* Course Meta */}
-                                    <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-                                        <div className="flex items-center gap-4 text-xs text-slate-500">
-                                            <span className="flex items-center gap-1">
-                                                <Clock className="w-4 h-4" />
-                                                {course.duration || 'N/A'}
-                                            </span>
-                                            <span className="flex items-center gap-1">
-                                                <Users className="w-4 h-4" />
-                                                {course.students || '0'}
-                                            </span>
+                                    <div className="pt-4 border-t border-slate-100">
+                                        <div className="flex items-center justify-between mb-3">
+                                            <div className="flex items-center gap-4 text-xs text-slate-500">
+                                                <span className="flex items-center gap-1">
+                                                    <Clock className="w-4 h-4" />
+                                                    {course.duration || 'N/A'}
+                                                </span>
+                                                <span className="flex items-center gap-1">
+                                                    <Users className="w-4 h-4" />
+                                                    {course.students || '0'}
+                                                </span>
+                                            </div>
+                                            <div className="text-sm font-semibold text-slate-800">${Number(course.price || 0).toFixed(2)}</div>
                                         </div>
-                                        <div className="flex items-center gap-1 text-yellow-500 text-sm">
-                                            <span>★</span>
-                                            <span className="font-semibold text-slate-700">{course.rating || '0.0'}</span>
+
+                                        <div className="flex items-center justify-between gap-3">
+                                            <Link to={`/courses/${course._id || course.id}`} className="text-indigo-600">View</Link>
+                                            {user ? (
+                                                isStudent ? (
+                                                    <button onClick={() => handleEnroll(course)} className="px-3 py-2 bg-blue-600 text-white rounded">Enroll</button>
+                                                ) : (
+                                                    <div className="text-sm text-slate-500">Only students can enroll</div>
+                                                )
+                                            ) : (
+                                                <Link to="/auth/login" className="px-3 py-2 bg-blue-600 text-white rounded">Login to enroll</Link>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
-                            </Link>
+                            </div>
                         ))}
                     </div>
                 )}

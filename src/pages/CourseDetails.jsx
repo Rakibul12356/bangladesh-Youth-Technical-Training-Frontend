@@ -102,12 +102,16 @@ const CourseDetails = () => {
                         <div className="bg-white rounded-xl p-8 shadow-sm">
                             <h2 className="text-2xl font-bold text-slate-900 mb-6">What You'll Learn</h2>
                             <div className="grid md:grid-cols-2 gap-4">
-                                {course.curriculum.map((item, index) => (
-                                    <div key={index} className="flex items-start gap-3">
-                                        <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                                        <span className="text-slate-700">{item}</span>
-                                    </div>
-                                ))}
+                                {(Array.isArray(course.curriculum) && course.curriculum.length > 0) ? (
+                                    course.curriculum.map((item, index) => (
+                                        <div key={index} className="flex items-start gap-3">
+                                            <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                                            <span className="text-slate-700">{item}</span>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p className="text-slate-600">No curriculum available for this course.</p>
+                                )}
                             </div>
                         </div>
                     </div>
